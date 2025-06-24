@@ -1,4 +1,5 @@
 from enum import Enum
+from pydantic import BaseModel, Field
 
 
 class QuestionType(str, Enum):
@@ -8,6 +9,14 @@ class QuestionType(str, Enum):
 
 
 class SpotifyType(str, Enum):
-    radio = "Spotify Radio"
-    album = "Artist Album"
-    playlist = "Playlist"
+    radio = "Play Spotify Radio"
+    album = "Play Artist Album"
+    playlist = "Play Playlist"
+    song = "Play Song"
+
+
+class Classifier(BaseModel):
+    classification: QuestionType = Field(
+        description="classify the user input into one of the question type categories"
+    )
+    thought: str = Field(description="Write your thought process.")

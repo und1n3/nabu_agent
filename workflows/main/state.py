@@ -1,8 +1,10 @@
 from typing_extensions import TypedDict
+
 from utils.schemas import QuestionType, SpotifyType
 
 
 class MainGraphState(TypedDict):
+    audio_sample_file: str
     input_command: str
     question_type: QuestionType
     spotify_type: SpotifyType
