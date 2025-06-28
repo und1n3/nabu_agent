@@ -1,4 +1,8 @@
 from workflows.main.workflow import execute_main_workflow
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename="nabu_langgraph_agent.log", level=logging.INFO)
 
 
 def main():

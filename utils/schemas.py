@@ -16,7 +16,9 @@ class SpotifyType(str, Enum):
 
 
 class Classifier(BaseModel):
+    thought: str = Field(
+        description="Think through your answer, return  your thought process summarized."
+    )
     classification: QuestionType = Field(
         description="classify the user input into one of the question type categories"
     )
-    thought: str = Field(description="Write your thought process.")
