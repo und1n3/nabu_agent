@@ -4,10 +4,13 @@ from langgraph.graph.graph import CompiledGraph
 from workflows.main.state import MainGraphState
 from workflows.spotify_agent import nodes as nodes
 from utils.schemas import SpotifyType
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 def decide_type(state: MainGraphState) -> SpotifyType:
-    return state["spotify_type"].value
+    return state["spotify_command"].value
 
 
 def build_spotify_workflow() -> CompiledGraph:

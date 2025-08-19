@@ -1,13 +1,18 @@
 from workflows.main.workflow import execute_main_workflow
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename="nabu_langgraph_agent.log", level=logging.INFO)
+
+logging.basicConfig(
+    filename="nabu_langgraph_agent.log", level=logging.INFO, filemode="w+"
+)
 
 
 def main():
-    print("Hola sóc en nabu-agent! En què puc ajudar-te?")
-    execute_main_workflow("Hola posa una cançó")
+    execute_main_workflow("Quina temperatura hi ha a mataro?")
 
 
 if __name__ == "__main__":

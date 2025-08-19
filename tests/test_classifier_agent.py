@@ -2,11 +2,12 @@ from tools.agents import execute_classifier_agent
 import json
 from utils.schemas import Classifier, QuestionType
 
+
 preestablished_commands_schema = json.load(open("data/preestablished_commands.json"))
 
 
 def test_classifier_agent_internet_1():
-    input_prompt = "ok nabu, Quin temps fa a mataró?"
+    input_prompt = "ok nabu, Quin temps fa avui a mataró?"
     result: Classifier = execute_classifier_agent(
         text=input_prompt, preestablished_commands_schema=preestablished_commands_schema
     )

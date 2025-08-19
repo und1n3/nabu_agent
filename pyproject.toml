@@ -11,8 +11,13 @@ dependencies = [
     "langchain>=0.3.26",
     "langchain-community>=0.3.26",
     "langchain-ollama>=0.3.3",
+    "langchain-tavily>=0.2.5",
     "langgraph>=0.4.8",
     "pydantic>=2.11.7",
     "pygraphviz>=1.14",
     "pytest>=8.4.1",
+    "python-dotenv>=1.1.1",
+    "python-weather>=2.1.0",
 ]
+log_cli = 1
+log_cli_level = "INFO"

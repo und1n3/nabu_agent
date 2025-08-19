@@ -8,6 +8,10 @@ from workflows.spotify_agent.workflow import (
     build_spotify_workflow,
 )
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 def decide_action(state: MainGraphState) -> QuestionType:
     if "question_type" in state:
