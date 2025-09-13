@@ -1,4 +1,6 @@
 from utils.schemas import (
+    Summarizer,
+    Translator,
     QuestionType,
     Classifier,
     PartySentence,
@@ -6,6 +8,7 @@ from utils.schemas import (
     SpotifyType,
 )
 from langchain_ollama import ChatOllama
+from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableSequence
 from langchain_core.prompts import ChatPromptTemplate
 import logging
@@ -13,6 +16,9 @@ from langchain.agents import Tool
 from langchain_community.tools import DuckDuckGoSearchRun, DuckDuckGoSearchResults
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
+from langchain_community.utilities import SearxSearchWrapper
+import os
+from tools.misc import search_and_fetch
 
 logger = logging.getLogger(__name__)
 
@@ -20,23 +26,32 @@ load_dotenv()
 
 
 def get_model() -> ChatOllama:
-    model = ChatOllama(model="devstral", temperature=0.15, top_p=1 - 0.01, num_ctx=8192)
+    # model = ChatOllama(
+    #     model="qwen3:30b", temperature=0.15, top_p=1 - 0.01, num_ctx=8192
+    # )
     # model = ChatOllama(model="llama3.2")
-
+    model = ChatOpenAI(
+        model="GPT-OSS-20B",
+        # model="GPT-OSS-120B-Low-F16",
+        api_key=os.environ["API_KEY"],
+        base_url=os.environ["BASE_URL"],
+    )
     return model
 
 
-def execute_classifier_agent(text, preestablished_commands_schema) -> QuestionType:
+def execute_classifier_agent(
+    english_command, preestablished_commands_schema
+) -> QuestionType:
     llm = get_model()
     structured_llm_grader = llm.with_structured_output(Classifier)
 
     system = """
-    You must assess if the given text is a prestablished command, a question that needs internet access or a command to play music in spotify.
-    Every Command will start with ok, Nabu (or something similar)
+    You must assess if the given text is one of the prestablished commands, a question that needs internet access or a command to play music in spotify.
     The preestablished commands are in the format {{trigger_sentence : description of the type of answer you have to say}}
-    Instructions:
-    - Translate the question into english.
-    - Decide whether it should go for the spotify command, for a search result in the web or if it is found within the prestablished commands
+    
+    **INSTRUCTIONS**:
+    - Think thoroughly what time of command you are asked. it should fall within one of the given categories
+    - Decide whether it should go for the spotify command (playing music), for a search result in the web (a question about general or up to date knowledge) or if it is found within the prestablished commands (given list)
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
@@ -44,7 +59,10 @@ def execute_classifier_agent(text, preestablished_commands_schema) -> QuestionTy
             ("system", system),
             (
                 "human",
-                """User question: \n\n {text} \n\n prestablished commands: {preestablished_commands_schema}""",
+                """- command:  {text}
+                  - prestablished commands: {preestablished_commands_schema}
+                  - Question categories: {question_categories}
+                  """,
             ),
         ]
     )
@@ -54,27 +72,26 @@ def execute_classifier_agent(text, preestablished_commands_schema) -> QuestionTy
     result: Classifier = classifier.invoke(
         {
             "preestablished_commands_schema": preestablished_commands_schema,
-            "text": text,
+            "text": english_command,
+            "question_categories": QuestionType,
         }
     )
     return result
 
 
-def execute_search_text(input_command):
+def execute_search_text(english_command):
     llm = get_model()
-    search_tool = DuckDuckGoSearchResults()
-    tools = [
-        Tool(
-            name="Internet Search",
-            func=search_tool.run,
-            description="Useful for searching information on the internet. Use this when you need to find current or factual information.",
-        )
-    ]
+    structured_llm_grader = llm.with_structured_output(Summarizer)
+    search_result = search_and_fetch(
+        query=english_command, num_results=2, chunk_size=1500
+    )
 
+    logger.info(f"\n\n Search Result: {search_result}")
     # Define the prompt template for the agent
     system = """
-    You are an internet searcher. Look up the question asked using your tool.
-    REturn just the answer.
+    You are an expert in summarizing content and giving the most accurate information. Given an initial command an the text containing the information,
+    Give an answer to the command using the information provided in the text. Keep it short, around one sentence.
+    
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
@@ -82,15 +99,16 @@ def execute_search_text(input_command):
             ("system", system),
             (
                 "human",
-                """User question: \n\n {input} """,
+                """ Command: {command}
+                    Text: \n\n {text} """,
             ),
         ]
     )
 
-    agent = answer_prompt | llm.bind_tools(tools)
-    result = agent.invoke({"input": input_command})
-    logger.info(f"Answer: {result.content}")
-    return result.content
+    agent = answer_prompt | structured_llm_grader
+    result = agent.invoke({"command": english_command, "text": search_result})
+    logger.info(f"Answer: {result.answer}")
+    return result.answer
 
 
 def execute_party_sentence(text, preestablished_commands_schema) -> PartySentence:
@@ -101,8 +119,6 @@ def execute_party_sentence(text, preestablished_commands_schema) -> PartySentenc
     You must assess which prestablished command the given text matches the best.
     Then , following the command's description, return a witty answer .
     Think this is a party / joke mode.
-
-    Every Command will start with ok, Nabu (or something similar), ignore this part of the text.
     The preestablished commands are in the format {{trigger_sentence : description of the type of answer you have to say}}
     """
 
@@ -127,15 +143,18 @@ def execute_party_sentence(text, preestablished_commands_schema) -> PartySentenc
     return result
 
 
-def execute_translator(text, origin_language, destination_language) -> str:
+def execute_translator(text: str, destination_language: str) -> Translator:
     llm = get_model()
+    structured_llm_grader = llm.with_structured_output(Translator)
 
     system = """
-    You must accurately translate the given sentence from the origin language to the destination language. 
-    Keep the connotations.
+    You are a language expert, you will be working mainly in catalan and english.Think thoroughly the meaning of the sentence and translate it to the best of your abilities. 
+    Translate word by word the given text. Be aware of double meanings in words, choose the correct translation.
+
+    **INSTRUCTIONS:**
+    - Detect the language of the given sentence 
+    - translate the text from the original language to the destination language. Return just the text translated.
     
-    Think thoroughly your answer, it should be in the requested format.
-    ** Return ONLY the translated sentence**
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
@@ -145,23 +164,20 @@ def execute_translator(text, origin_language, destination_language) -> str:
                 "human",
                 """
                 - Text to translate: {text}
-                - Origin Language : {origin_language}
                 - Destination language: {destination_language}
                 """,
             ),
         ]
     )
+    traslator_llm: RunnableSequence = answer_prompt | structured_llm_grader
 
-    party_model: RunnableSequence = answer_prompt | llm
-
-    result: str = party_model.invoke(
+    result: Translator = traslator_llm.invoke(
         {
             "text": text,
-            "origin_language": origin_language,
             "destination_language": destination_language,
         }
     )
-    return result.content
+    return result
 
 
 def execute_spotify_classifier_agent(text) -> SpotifyType:

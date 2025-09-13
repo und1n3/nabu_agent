@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, END
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 
 from workflows.main.state import MainGraphState
 from workflows.spotify_agent import nodes as nodes
@@ -13,7 +13,7 @@ def decide_type(state: MainGraphState) -> SpotifyType:
     return state["spotify_command"].value
 
 
-def build_spotify_workflow() -> CompiledGraph:
+def build_spotify_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
 
     workflow.add_node("What to play?", nodes.decide_action)

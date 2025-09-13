@@ -7,37 +7,32 @@ preestablished_commands_schema = json.load(open("data/preestablished_commands.js
 
 
 def test_classifier_agent_internet_1():
-    input_prompt = "ok nabu, Quin temps fa avui a mataró?"
+    input_prompt = "Quin temps fa avui a mataró?"
     result: Classifier = execute_classifier_agent(
         text=input_prompt, preestablished_commands_schema=preestablished_commands_schema
     )
-    print(result.thought)
-
     assert result.classification == QuestionType.internet
 
 
 def test_classifier_agent_internet_2():
-    input_prompt = "ok nabu, quin any va ser la revolució francesa?"
+    input_prompt = "quin any va ser la revolució francesa?"
     result: Classifier = execute_classifier_agent(
         text=input_prompt, preestablished_commands_schema=preestablished_commands_schema
     )
-    print(result.thought)
     assert result.classification == QuestionType.internet
 
 
 def test_classifer_agent_spotify_1():
-    input_prompt = "ok nabu, Posa una cançó de Mika"
+    input_prompt = "Posa una cançó de Mika"
     result: Classifier = execute_classifier_agent(
         text=input_prompt, preestablished_commands_schema=preestablished_commands_schema
     )
-    print(result.thought)
     assert result.classification == QuestionType.spotify
 
 
 def test_classifer_agent_party_1():
-    input_prompt = "ok nabu, boom"
+    input_prompt = "boom"
     result: Classifier = execute_classifier_agent(
         text=input_prompt, preestablished_commands_schema=preestablished_commands_schema
     )
-    print(result.thought)
     assert result.classification == QuestionType.party

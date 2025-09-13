@@ -1,5 +1,5 @@
 from langgraph.graph import END, StateGraph
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 
 from utils.schemas import QuestionType
 from workflows.main import nodes as nodes
@@ -19,14 +19,17 @@ def decide_action(state: MainGraphState) -> QuestionType:
     return END
 
 
-def build_main_workflow() -> CompiledGraph:
+def build_main_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
+    workflow.add_node("Translator", nodes.translate_to_english)
     workflow.add_node("Enrouting Question", nodes.enroute_question)
     workflow.add_node("Pre-stablished commands", nodes.pre_established_commands)
     workflow.add_node("Internet search", nodes.internet_search)
     workflow.add_node("Spotify Command", build_spotify_workflow())
     workflow.add_node("Finish Action", nodes.finish_action)
 
+    workflow.set_entry_point("Translator")
+    workflow.add_edge("Translator", "Enrouting Question")
     workflow.add_conditional_edges(
         "Enrouting Question",
         decide_action,
@@ -37,7 +40,6 @@ def build_main_workflow() -> CompiledGraph:
             END: END,
         },
     )
-    workflow.set_entry_point("Enrouting Question")
     workflow.add_edge("Pre-stablished commands", "Finish Action")
     workflow.add_edge("Internet search", "Finish Action")
     workflow.add_edge("Spotify Command", "Finish Action")
@@ -47,6 +49,6 @@ def build_main_workflow() -> CompiledGraph:
 
 def execute_main_workflow(user_input: str) -> None:
     app = build_main_workflow()
-    app.get_graph().draw_mermaid_png(output_file_path="graph.png")
-    app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
+    # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
+    # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
     app.invoke({"input_command": user_input})

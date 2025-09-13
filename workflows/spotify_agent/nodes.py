@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 def decide_action(state: MainGraphState):
     logger.info("--- Decide Spotify Command Typpe Node ---")
     result: SpotifyType = execute_spotify_classifier_agent(
-        text=state["input_command"],
+        text=state["english_command"],
     )
     state["spotify_command"] = result.classification
     logger.info(f"Enrouting to: {result.classification}")

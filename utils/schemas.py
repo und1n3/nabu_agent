@@ -15,12 +15,22 @@ class SpotifyType(str, Enum):
     song = "Play Song"
 
 
-class Classifier(BaseModel):
-    thought: str = Field(
-        description="Think through your answer, return  your thought process summarized."
+class Summarizer(BaseModel):
+    answer: str = Field(description="The summarized answer extracted from the text.")
+
+
+class Translator(BaseModel):
+    original_language: str = Field(
+        description="The language the input command is written in. Just one word."
     )
+    translated_command: str = Field(
+        description="The input command translated from the original language to the defined destination language. Be accurate."
+    )
+
+
+class Classifier(BaseModel):
     classification: QuestionType = Field(
-        description="classify the user input into one of the question type categories"
+        description="Classification of the command given into: internet (internet search), spotify (play music) or party (one of the preestablished commands)."
     )
 
 
@@ -37,8 +47,8 @@ class PartySentence(BaseModel):
 
 class SpotifyClassifier(BaseModel):
     thought: str = Field(
-        description="Think through your answer, return  your thought process summarized."
+        description="Think thoroughly your answer, return  your thought process summarized."
     )
     classification: SpotifyType = Field(
-        description="classify the user input into one of the question type categories"
+        description="classify the user input into one of the spotify type categories"
     )

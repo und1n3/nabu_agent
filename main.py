@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 def main():
-    execute_main_workflow("Quina temperatura hi ha a mataro?")
+    execute_main_workflow("Quins dies son festius a Catalunya aquest mes?")
 
 
 if __name__ == "__main__":
