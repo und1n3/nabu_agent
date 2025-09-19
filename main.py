@@ -12,7 +12,7 @@ logging.basicConfig(
 
 
 def main():
-    execute_main_workflow("Quins dies son festius a Catalunya aquest mes?")
+    execute_main_workflow("Posa música dels Amics de les Arts")
 
 
 if __name__ == "__main__":

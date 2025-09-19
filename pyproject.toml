@@ -21,6 +21,7 @@ dependencies = [
     "pytest>=8.4.1",
     "python-dotenv>=1.1.1",
     "python-weather>=2.1.0",
+    "spotipy>=2.25.1",
 ]
 log_cli = 1
 log_cli_level = "INFO"

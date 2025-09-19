@@ -17,26 +17,12 @@ def build_spotify_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
 
     workflow.add_node("What to play?", nodes.decide_action)
-    workflow.add_node(SpotifyType.song.value, nodes.play_song)
-    workflow.add_node(SpotifyType.playlist.value, nodes.play_playlist)
-    workflow.add_node(SpotifyType.album.value, nodes.play_album)
-    workflow.add_node(SpotifyType.radio.value, nodes.play_radio)
+    workflow.add_node("Search and play", nodes.search_and_play_music)
 
-    workflow.add_conditional_edges(
-        "What to play?",
-        decide_type,
-        {
-            SpotifyType.album.value: SpotifyType.album.value,
-            SpotifyType.song.value: SpotifyType.song.value,
-            SpotifyType.radio.value: SpotifyType.radio.value,
-            SpotifyType.playlist.value: SpotifyType.playlist.value,
-        },
-    )
     workflow.set_entry_point("What to play?")
-    workflow.add_edge(SpotifyType.album.value, END)
-    workflow.add_edge(SpotifyType.song.value, END)
-    workflow.add_edge(SpotifyType.radio.value, END)
-    workflow.add_edge(SpotifyType.playlist.value, END)
+    workflow.add_edge("Search and play", END)
+    workflow.add_edge("What to play?", "Search and play")
+
     return workflow.compile()
 
 

@@ -9,10 +9,7 @@ class MainGraphState(TypedDict):
     english_command: str
     question_type: QuestionType
     spotify_command: SpotifyType
-    album: str
-    song: str
-    playlist: str
-    radio: str
+    spotify_query: str
     web_search: str
     final_answer: str  # sentence to return
     final_answer_translated: str

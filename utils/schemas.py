@@ -9,10 +9,11 @@ class QuestionType(str, Enum):
 
 
 class SpotifyType(str, Enum):
-    radio = "Play Spotify Radio"
-    album = "Play Artist Album"
-    playlist = "Play Playlist"
-    song = "Play Song"
+    TRACK = "track"  # play a specific song / track
+    ARTIST = "artist"  # play artist
+    ALBUM = "album"  # play an artist’s album
+    PLAYLIST = "playlist"  # play a playlist
+    RADIO = "radio"  # play radio (artist or song radio)
 
 
 class Summarizer(BaseModel):
@@ -24,7 +25,7 @@ class Translator(BaseModel):
         description="The language the input command is written in. Just one word."
     )
     translated_command: str = Field(
-        description="The input command translated from the original language to the defined destination language. Be accurate."
+        description="The input command translated from the original language to the defined destination language. Be accurate. If there is a name or an artist in the command, do not translate it."
     )
 
 
@@ -46,9 +47,11 @@ class PartySentence(BaseModel):
 
 
 class SpotifyClassifier(BaseModel):
-    thought: str = Field(
-        description="Think thoroughly your answer, return  your thought process summarized."
-    )
     classification: SpotifyType = Field(
-        description="classify the user input into one of the spotify type categories"
+        description="classify the user input into one of the spotify type categories. If radio mentioned put radio. if song put track. if its an artist put artist. if album put album."
+    )
+    key_word: str = Field(
+        description="Key artist, track or playlist to search for in Spotify. Between 1 and 10 words all in one line",
+        min_length=1,
+        max_length=10,
     )

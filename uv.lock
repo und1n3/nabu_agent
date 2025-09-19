@@ -859,6 +859,7 @@ dependencies = [
     { name = "pytest" },
     { name = "python-dotenv" },
     { name = "python-weather" },
+    { name = "spotipy" },
 ]
 
 [package.metadata]
@@ -879,6 +880,7 @@ requires-dist = [
     { name = "pytest", specifier = ">=8.4.1" },
     { name = "python-dotenv", specifier = ">=1.1.1" },
     { name = "python-weather", specifier = ">=2.1.0" },
+    { name = "spotipy", specifier = ">=2.25.1" },
 ]
 
 [[package]]
@@ -1308,6 +1310,15 @@ wheels = [
 ]
 
 [[package]]
+name = "redis"
+version = "6.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0d/d6/e8b92798a5bd67d659d51a18170e91c16ac3b59738d91894651ee255ed49/redis-6.4.0.tar.gz", hash = "sha256:b01bc7282b8444e28ec36b261df5375183bb47a07eb9c603f284e89cbc5ef010", size = 4647399 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/02/89e2ed7e85db6c93dfa9e8f691c5087df4e3551ab39081a4d7c6d1f90e05/redis-6.4.0-py3-none-any.whl", hash = "sha256:f0544fa9604264e9464cdf4814e7d4830f74b165d52f2a330a760a88dd248b7f", size = 279847 },
+]
+
+[[package]]
 name = "regex"
 version = "2025.9.1"
 source = { registry = "https://pypi.org/simple" }
@@ -1400,6 +1411,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/6d/e6/21ccce3262dd4889aa3332e5a119a3491a95e8f60939870a3a035aabac0d/soupsieve-2.8.tar.gz", hash = "sha256:e2dd4a40a628cb5f28f6d4b0db8800b8f581b65bb380b97de22ba5ca8d72572f", size = 103472 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/14/a0/bb38d3b76b8cae341dad93a2dd83ab7462e6dbcdd84d43f54ee60a8dc167/soupsieve-2.8-py3-none-any.whl", hash = "sha256:0cc76456a30e20f5d7f2e14a98a4ae2ee4e5abdc7c5ea0aafe795f344bc7984c", size = 36679 },
+]
+
+[[package]]
+name = "spotipy"
+version = "2.25.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "redis" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/18/22/d900e55cfdd489ecdacf560aea4618848893fcbab4433bf62d0d731fa030/spotipy-2.25.1.tar.gz", hash = "sha256:607d3c43722b7e217a7e6c82f17258b798b92a512017d60c06323d62ae814cd7", size = 44432 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/bd/3b/dde90e39c456f0d72397afd49d433f95c6a2fdbdcd829bcfc38cdbf6949a/spotipy-2.25.1-py3-none-any.whl", hash = "sha256:18f47d9a0594ced8001b3baa5a4160ea6dcf570abbdad371971f475a81892844", size = 31331 },
 ]
 
 [[package]]

@@ -12,20 +12,19 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnableSequence
 from langchain_core.prompts import ChatPromptTemplate
 import logging
-from langchain.agents import Tool
-from langchain_community.tools import DuckDuckGoSearchRun, DuckDuckGoSearchResults
+
 from dotenv import load_dotenv
 from langchain.prompts import PromptTemplate
 from langchain_community.utilities import SearxSearchWrapper
 import os
-from tools.misc import search_and_fetch
+from tools.web_loader import search_and_fetch
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 
 
-def get_model() -> ChatOllama:
+def get_model() -> ChatOpenAI:
     # model = ChatOllama(
     #     model="qwen3:30b", temperature=0.15, top_p=1 - 0.01, num_ctx=8192
     # )
@@ -35,6 +34,8 @@ def get_model() -> ChatOllama:
         # model="GPT-OSS-120B-Low-F16",
         api_key=os.environ["API_KEY"],
         base_url=os.environ["BASE_URL"],
+        temperature=0.1,
+        top_p=1,
     )
     return model
 
@@ -48,10 +49,14 @@ def execute_classifier_agent(
     system = """
     You must assess if the given text is one of the prestablished commands, a question that needs internet access or a command to play music in spotify.
     The preestablished commands are in the format {{trigger_sentence : description of the type of answer you have to say}}
-    
+            
+            - preestablished_command  (exact match or fuzzy match; return matched_trigger)
+            - spotify                (user wants to play music/radio)
+            - web_search             (user asks a general/up-to-date question requiring internet)
+
     **INSTRUCTIONS**:
     - Think thoroughly what time of command you are asked. it should fall within one of the given categories
-    - Decide whether it should go for the spotify command (playing music), for a search result in the web (a question about general or up to date knowledge) or if it is found within the prestablished commands (given list)
+    - Decide whether it should go for the spotify command (playing music, play radio), for a search result in the web (a question about general or up to date knowledge) or if it is found within the prestablished commands (given list)
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
@@ -150,10 +155,12 @@ def execute_translator(text: str, destination_language: str) -> Translator:
     system = """
     You are a language expert, you will be working mainly in catalan and english.Think thoroughly the meaning of the sentence and translate it to the best of your abilities. 
     Translate word by word the given text. Be aware of double meanings in words, choose the correct translation.
-
+    Perform an intelligent translation, some words may be in another language if they are a song or arstist. take this into account.
+    
     **INSTRUCTIONS:**
     - Detect the language of the given sentence 
     - translate the text from the original language to the destination language. Return just the text translated.
+    - Do not translate people's artists' or albums names.
     
     """
 
@@ -180,15 +187,26 @@ def execute_translator(text: str, destination_language: str) -> Translator:
     return result
 
 
-def execute_spotify_classifier_agent(text) -> SpotifyType:
+def execute_spotify_classifier_agent(text) -> SpotifyClassifier:
     llm = get_model()
     structured_llm_grader = llm.with_structured_output(SpotifyClassifier)
 
     system = """
-
+    You must prepare a spotify query search from the user command. Some examples would be:
+    Example1 : 
+        - Command: play music of la oreja de van gogh
+        - Answer: {{'type': artist , 'key_word'  : la oreja de van gogh}}
+    Example 2:
+        - Command: play the song por qué te vas
+        - Answer: {{type: track}}
+    Example 3:
+        - Command: play radio Crim
+        - Answer: {{type: radio}}
     Instructions:
     - Translate the question into english.
-    - Decide which of the given Spotify commands suits best [radio, song, playlist or album]
+    - Decide which of the given Spotify commands suits best [radio, song, playlist or album]. If radio mentioned, type is radio.
+    - Return also the key word(s) to search for. For example, given a song it would be the song title, radio or playlist would be the name, album would be title . Also the artist if given
+    
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
