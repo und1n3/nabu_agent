@@ -49,6 +49,6 @@ def build_main_workflow() -> CompiledStateGraph:
 
 def execute_main_workflow(user_input: str) -> None:
     app = build_main_workflow()
-    # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
-    # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
+    app.get_graph().draw_mermaid_png(output_file_path="graph.png")
+    app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
     app.invoke({"input_command": user_input})

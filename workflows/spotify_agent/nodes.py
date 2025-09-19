@@ -35,7 +35,7 @@ def search_and_play_music(state: MainGraphState) -> MainGraphState:
     else:
         uris = None
         context_uri = id
-    print(f"context_uri: {context_uri}, uris: {uris}")
+
     play_music(context_uri=context_uri, uris=uris)
     state["final_answer"] = f"Playing: {state['english_command']}"
     return state
