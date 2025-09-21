@@ -8,9 +8,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-logging.basicConfig(
-    filename="nabu_langgraph_agent.log", level=logging.INFO, filemode="w+"
-)
+logging.basicConfig(filename="nabu_agent_agent.log", level=logging.INFO, filemode="w+")
 
 
 def main():
