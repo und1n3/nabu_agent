@@ -1,7 +1,7 @@
-from tools.agents import execute_classifier_agent
 import json
-from utils.schemas import Classifier, QuestionType
 
+from tools.agents import execute_classifier_agent
+from utils.schemas import Classifier, QuestionType
 
 preestablished_commands_schema = json.load(open("data/preestablished_commands.json"))
 

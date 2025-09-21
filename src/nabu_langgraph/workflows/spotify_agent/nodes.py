@@ -1,9 +1,11 @@
-from workflows.main.state import MainGraphState
-from utils.schemas import SpotifyType, SpotifyClassifier
 import logging
+
 from dotenv import load_dotenv
-from tools.agents import execute_spotify_classifier_agent
-from tools.spotify import play_music, search_music
+
+from ...tools.agents import execute_spotify_classifier_agent
+from ...tools.spotify import play_music, search_music
+from ...utils.schemas import SpotifyClassifier, SpotifyType
+from ...workflows.main.state import MainGraphState
 
 load_dotenv()
 

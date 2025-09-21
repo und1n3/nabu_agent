@@ -1,10 +1,10 @@
-from langgraph.graph import StateGraph, END
+from dotenv import load_dotenv
+from langgraph.graph import END, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from workflows.main.state import MainGraphState
-from workflows.spotify_agent import nodes as nodes
-from utils.schemas import SpotifyType
-from dotenv import load_dotenv
+from ...utils.schemas import SpotifyType
+from ...workflows.main.state import MainGraphState
+from ...workflows.spotify_agent import nodes as nodes
 
 load_dotenv()
 

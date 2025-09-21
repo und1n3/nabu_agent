@@ -1,6 +1,6 @@
 from typing_extensions import TypedDict
 
-from utils.schemas import QuestionType, SpotifyType
+from ...utils.schemas import QuestionType, SpotifyType
 
 
 class MainGraphState(TypedDict):

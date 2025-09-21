@@ -1,21 +1,28 @@
-from workflows.main.state import MainGraphState
-from tools.agents import (
+import importlib.resources as pkg_resources
+import json
+import logging
+
+from dotenv import load_dotenv
+
+from ... import utils
+from ...tools.agents import (
     execute_classifier_agent,
     execute_party_sentence,
     execute_search_text,
     execute_translator,
 )
-from utils.schemas import Translator, Classifier, QuestionType, PartySentence
-
-
-import json
-import logging
-from dotenv import load_dotenv
+from ...utils.schemas import Classifier, PartySentence, QuestionType, Translator
+from ...workflows.main.state import MainGraphState
 
 load_dotenv()
+import importlib.resources as pkg_resources
+
+from ... import data
 
 logger = logging.getLogger(__name__)
-pre_established_commands = json.load(open("data/preestablished_commands.json"))
+
+with pkg_resources.open_text(data, "preestablished_commands.json") as f:
+    pre_established_commands = json.load(f)
 
 
 def translate_to_english(state: MainGraphState) -> MainGraphState:

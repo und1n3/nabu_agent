@@ -1,23 +1,20 @@
-from utils.schemas import (
-    Summarizer,
-    Translator,
-    QuestionType,
-    Classifier,
-    PartySentence,
-    SpotifyClassifier,
-    SpotifyType,
-)
-from langchain_ollama import ChatOllama
-from langchain_openai import ChatOpenAI
-from langchain_core.runnables import RunnableSequence
-from langchain_core.prompts import ChatPromptTemplate
 import logging
+import os
 
 from dotenv import load_dotenv
-from langchain.prompts import PromptTemplate
-from langchain_community.utilities import SearxSearchWrapper
-import os
-from tools.web_loader import search_and_fetch
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableSequence
+from langchain_openai import ChatOpenAI
+
+from ..tools.web_loader import search_and_fetch
+from ..utils.schemas import (
+    Classifier,
+    PartySentence,
+    QuestionType,
+    SpotifyClassifier,
+    Summarizer,
+    Translator,
+)
 
 logger = logging.getLogger(__name__)
 

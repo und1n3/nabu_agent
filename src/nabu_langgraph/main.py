@@ -1,6 +1,8 @@
-from workflows.main.workflow import execute_main_workflow
 import logging
+
 from dotenv import load_dotenv
+
+from .workflows.main.workflow import execute_main_workflow
 
 load_dotenv()
 
