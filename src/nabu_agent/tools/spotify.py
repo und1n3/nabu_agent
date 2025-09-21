@@ -49,7 +49,10 @@ def search_music(criteria_type: SpotifyType, query: str):
     print(f"______________ {criteria_type} ____ {query}")
 
     result = spotify_client.search(q=query, type=[criteria_type], limit=2)
-    print(result[criteria_type + "s"]["items"])
-    result_id = result[criteria_type + "s"]["items"][0]["uri"]
-    print(result_id)
+    try:
+        result_id = result[criteria_type + "s"]["items"][0]["uri"]
+    except:
+        result = spotify_client.search(q=query, type=["track"], limit=2)
+        result_id = result["tracks"]["items"][0]["uri"]
+
     return result_id
