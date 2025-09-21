@@ -16,32 +16,17 @@ def decide_action(state: MainGraphState) -> QuestionType:
     return END
 
 
-import requests
-
-import asyncio
-
-
-async def test_function(state: MainGraphState):
-    async with requests.get(url="https://www.google.com") as response:
-        result = await response.content
-        state["final_answer_translated"] = "PROVA"
-    return state
-
-
 def build_main_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
-    workflow.add_node("test", test_function)
-    workflow.set_entry_point("test")
-    workflow.set_finish_point("test")
 
-    # workflow.add_node("Translator", nodes.translate_to_english)
+    workflow.add_node("Translator", nodes.translate_to_english)
     # workflow.add_node("Enrouting Question", nodes.enroute_question)
     # workflow.add_node("Pre-stablished commands", nodes.pre_established_commands)
     # workflow.add_node("Internet search", nodes.internet_search)
     # workflow.add_node("Spotify Command", build_spotify_workflow())
-    # workflow.add_node("Finish Action", nodes.finish_action)
+    workflow.add_node("Finish Action", nodes.finish_action)
 
-    # workflow.set_entry_point("Translator")
+    workflow.set_entry_point("Translator")
     # workflow.add_edge("Translator", "Enrouting Question")
     # workflow.add_conditional_edges(
     #     "Enrouting Question",
@@ -56,7 +41,8 @@ def build_main_workflow() -> CompiledStateGraph:
     # workflow.add_edge("Pre-stablished commands", "Finish Action")
     # workflow.add_edge("Internet search", "Finish Action")
     # workflow.add_edge("Spotify Command", "Finish Action")
-    # workflow.set_finish_point("Finish Action")
+    workflow.add_edge("Translator", "Finish Action")
+    workflow.set_finish_point("Finish Action")
     return workflow.compile()
 
 

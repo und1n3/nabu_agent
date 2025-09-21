@@ -67,7 +67,10 @@ def internet_search(state: MainGraphState) -> MainGraphState:
 def finish_action(state: MainGraphState) -> MainGraphState:
     logger.info("--- Final Action Node ---")
     logger.info("Translating the final answer to reproduce in the speakers.")
+    if "final_answer" not in state:
+        state["final_answer"] = state["english_command"]
     logger.info(f"Sentence: {state['final_answer']}")
+
     result = execute_translator(
         text=state["final_answer"],
         destination_language=state["original_language"],
