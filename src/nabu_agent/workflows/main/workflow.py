@@ -18,9 +18,13 @@ def decide_action(state: MainGraphState) -> QuestionType:
 
 import requests
 
+import asyncio
 
-def test_function(state: MainGraphState):
-    requests.get(url="https://www.google.com")
+
+async def test_function(state: MainGraphState):
+    async with requests.get(url="https://www.google.com") as response:
+        result = await response.content
+
     return state
 
 
