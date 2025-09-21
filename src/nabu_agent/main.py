@@ -12,7 +12,9 @@ logging.basicConfig(filename="nabu_agent_agent.log", level=logging.INFO, filemod
 
 
 def main():
-    execute_main_workflow("Posa música dels Amics de les Arts")
+    res = execute_main_workflow("hola")
+    logger.info(res)
+    print("f")
 
 
 if __name__ == "__main__":

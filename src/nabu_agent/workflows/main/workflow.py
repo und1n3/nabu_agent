@@ -44,8 +44,10 @@ def build_main_workflow() -> CompiledStateGraph:
     return workflow.compile()
 
 
-def execute_main_workflow(user_input: str) -> None:
+def execute_main_workflow(user_input: str) -> str:
     app = build_main_workflow()
     # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
     # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
-    app.invoke({"input_command": user_input})
+    res = app.invoke({"input_command": user_input})
+
+    return res["final_answer_translated"]

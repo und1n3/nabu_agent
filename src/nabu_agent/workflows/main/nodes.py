@@ -30,18 +30,6 @@ def translate_to_english(state: MainGraphState) -> MainGraphState:
     return state
 
 
-def translate_back(state: MainGraphState) -> MainGraphState:
-    logger.info("---Translating back the text ---")
-    result: Translator = execute_translator(
-        text=state["final_answer"], destination_language=state["original_language"]
-    )
-    state["final_answer_translated"] = result.translated_command
-    logger.info(
-        f"Language detected: {result.original_langugage}. Translated text: {result.translated_command}"
-    )
-    return state
-
-
 def enroute_question(state: MainGraphState) -> MainGraphState:
     logger.info("--- Enroute Question Node ---")
     result: Classifier = execute_classifier_agent(
@@ -84,7 +72,7 @@ def finish_action(state: MainGraphState) -> MainGraphState:
         text=state["final_answer"],
         destination_language=state["original_language"],
     )
-    state["final_answer_translated"] = result
+    state["final_answer_translated"] = result.translated_command
     logger.info(f"Translated Sentence: {state['final_answer_translated']}")
     # TODO: Here we should send this text to Nabu
     return state
