@@ -27,8 +27,8 @@ def get_model() -> ChatOpenAI:
     # )
     # model = ChatOllama(model="llama3.2")
     model = ChatOpenAI(
-        model="GPT-OSS-20B",
-        # model="GPT-OSS-120B-Low-F16",
+        # model="GPT-OSS-20B",
+        model="Qwen3-4B",
         api_key=os.environ["API_KEY"],
         base_url=os.environ["BASE_URL"],
         temperature=0.1,
