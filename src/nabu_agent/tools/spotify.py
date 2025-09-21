@@ -26,7 +26,7 @@ DEVICE_NAME = "librespot"
 DEVICE_ID = "7c28ab8a5c9512e4266ac7cb756312c82ee43d7e"
 
 
-spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
+spotify_client = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope, cache_path="/"))
 print(spotify_client.devices())
 
 
