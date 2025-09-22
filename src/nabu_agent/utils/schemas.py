@@ -57,7 +57,3 @@ class SpotifyClassifier(BaseModel):
         min_length=1,
         max_length=10,
     )
-
-
-class HomeAssistan(BaseModel):
-    answer: str = Field(description="The summarized answer extracted from the text.")
