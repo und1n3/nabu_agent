@@ -86,7 +86,7 @@ async def homeassistant(state: MainGraphState) -> MainGraphState:
     logger.info("--- Home Assistant Node ---")
 
     search: str = await execute_ha_command(english_command=state["english_command"])
-    logger.info(f"Result from the web search: {search}")
+    logger.info(f"Result from HA : {search}")
 
     state["final_answer"] = search
 
