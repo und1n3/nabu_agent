@@ -1,4 +1,6 @@
 import logging
+import argparse
+import asyncio
 
 from dotenv import load_dotenv
 
@@ -12,9 +14,22 @@ logging.basicConfig(filename="nabu_agent_agent.log", level=logging.INFO, filemod
 
 
 def main():
-    res = execute_main_workflow("hola")
+    res = execute_main_workflow(input)
     logger.info(res)
     print("f")
+
+
+def app():
+    # All the logic of argparse goes in this function
+    parser = argparse.ArgumentParser(description="Say hi.")
+    parser.add_argument(
+        "input",
+        type=str,
+        help="Input",
+    )
+    args = parser.parse_args()
+    res = asyncio.run(execute_main_workflow(args.input))
+    logger.info(res)
 
 
 if __name__ == "__main__":

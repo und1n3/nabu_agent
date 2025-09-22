@@ -7,6 +7,7 @@ class QuestionType(str, Enum):
     spotify = "Spotify Command"
     internet = "Internet Search"
     party = "Party Mode"
+    homeassistant = "Home Assistant Command"
 
 
 class SpotifyType(str, Enum):
@@ -32,7 +33,7 @@ class Translator(BaseModel):
 
 class Classifier(BaseModel):
     classification: QuestionType = Field(
-        description="Classification of the command given into: internet (internet search), spotify (play music) or party (one of the preestablished commands)."
+        description="Classification of the command given into: internet (internet search), spotify (play music), party (one of the preestablished commands) or homeassistant (for example turn on the light)."
     )
 
 
@@ -56,3 +57,7 @@ class SpotifyClassifier(BaseModel):
         min_length=1,
         max_length=10,
     )
+
+
+class HomeAssistan(BaseModel):
+    answer: str = Field(description="The summarized answer extracted from the text.")

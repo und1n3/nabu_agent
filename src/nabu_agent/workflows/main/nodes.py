@@ -7,6 +7,7 @@ from ...tools.agents import (
     execute_party_sentence,
     execute_search_text,
     execute_translator,
+    execute_ha_command,
 )
 from ...data.preestablished_commands import party_commands
 from ...utils.schemas import Classifier, PartySentence, QuestionType, Translator
@@ -77,5 +78,16 @@ def finish_action(state: MainGraphState) -> MainGraphState:
     )
     state["final_answer_translated"] = result.translated_command
     logger.info(f"Translated Sentence: {state['final_answer_translated']}")
-    # TODO: Here we should send this text to Nabu
+
+    return state
+
+
+async def homeassistant(state: MainGraphState) -> MainGraphState:
+    logger.info("--- Internet Search Node ---")
+
+    search: str = await execute_ha_command(english_command=state["english_command"])
+    logger.info(f"Result from the web search: {search}")
+
+    state["final_answer"] = search
+
     return state

@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
 
 from ..tools.web_loader import search_and_fetch
@@ -30,7 +31,7 @@ def get_model() -> ChatOpenAI:
         # model="GPT-OSS-20B",
         model="Qwen3-4B",
         api_key=os.environ["API_KEY"],
-        base_url=os.environ["BASE_URL"],
+        base_url=os.environ["LLM_BASE_URL"],
         temperature=0.1,
         top_p=1,
     )
@@ -53,7 +54,8 @@ def execute_classifier_agent(
 
     **INSTRUCTIONS**:
     - Think thoroughly what time of command you are asked. it should fall within one of the given categories
-    - Decide whether it should go for the spotify command (playing music, play radio), for a search result in the web (a question about general or up to date knowledge) or if it is found within the prestablished commands (given list)
+    - Decide whether it should go for the spotify command (playing music, play radio), for a search result in the web (a question about general or up to date knowledge), if it is found within the prestablished commands (given list)
+      or is a homeassitant_command (turn on the light, what devices I have?)
     """
 
     answer_prompt = ChatPromptTemplate.from_messages(
@@ -224,4 +226,40 @@ def execute_spotify_classifier_agent(text) -> SpotifyClassifier:
         }
     )
 
+    return result
+
+
+async def execute_ha_command(english_command):
+    ha_token = os.environ["HA_TOKEN"]
+    ha_url = os.environ["HA_URL"]
+    client = MultiServerMCPClient(
+        {
+            "homeassistant": {
+                "url": f"{ha_url}/mcp_server/sse",
+                "transport": "sse",
+                "headers": {
+                    "Authorization": f"Bearer {ha_token}",
+                },
+            },
+        }
+    )
+
+    tools = await client.get_tools()
+    llm = get_model().bind_tools(tools)
+    result = await llm.ainvoke(english_command)
+
+    for tool_call in result.tool_calls:
+        tool_name = tool_call["name"]
+        tool_args = tool_call.get("args", {})
+        tool = next(t for t in tools if t.name == tool_name)
+        tool_result = await tool.ainvoke(tool_args)
+
+        followup = await llm.ainvoke(
+            [
+                f"The original prompt is: {english_command}, parse the result of the tool following the instructions:",
+                result,
+                tool_result,
+            ]
+        )
+        return followup.content
     return result
