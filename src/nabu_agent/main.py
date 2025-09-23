@@ -1,6 +1,5 @@
 import logging
 import argparse
-import asyncio
 
 from dotenv import load_dotenv
 
@@ -28,7 +27,7 @@ def app():
         help="Input",
     )
     args = parser.parse_args()
-    res = asyncio.run(execute_main_workflow(args.input))
+    res = execute_main_workflow(args.input)
     logger.info(res)
 
 
