@@ -47,9 +47,8 @@ def search_music(criteria_type: SpotifyType, query: str):
         criteria_type = criteria_type.value
 
     print(f"______________ {criteria_type} ____ {query}")
-
-    result = spotify_client.search(q=query, type=[criteria_type], limit=2)
     try:
+        result = spotify_client.search(q=query, type=[criteria_type], limit=2)
         result_id = result[criteria_type + "s"]["items"][0]["uri"]
     except:
         result = spotify_client.search(q=query, type=["track"], limit=2)
