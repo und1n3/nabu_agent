@@ -16,7 +16,7 @@ def decide_action(state: MainGraphState) -> QuestionType:
     return END
 
 
-def build_main_workflow() -> CompiledStateGraph:
+async def build_main_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
 
     workflow.add_node("Translator", nodes.translate_to_english)
@@ -51,11 +51,11 @@ def build_main_workflow() -> CompiledStateGraph:
 global hass
 
 
-def execute_main_workflow(user_input: str, hass=None) -> str:
+async def execute_main_workflow(user_input: str, hass=None) -> str:
     hass = hass
-    app = build_main_workflow()
+    app = await build_main_workflow()
     # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
     # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
-    res = app.invoke({"input_command": user_input})
+    res = await app.ainvoke({"input_command": user_input})
 
     return res["final_answer_translated"]

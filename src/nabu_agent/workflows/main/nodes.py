@@ -82,10 +82,10 @@ def finish_action(state: MainGraphState) -> MainGraphState:
     return state
 
 
-def homeassistant(state: MainGraphState) -> MainGraphState:
+async def homeassistant(state: MainGraphState) -> MainGraphState:
     logger.info("--- Home Assistant Node ---")
 
-    search: str = execute_ha_command(english_command=state["english_command"])
+    search: str = await execute_ha_command(english_command=state["english_command"])
     logger.info(f"Result from HA : {search}")
 
     state["final_answer"] = search

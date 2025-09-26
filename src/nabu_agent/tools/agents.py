@@ -229,7 +229,7 @@ def execute_spotify_classifier_agent(text) -> SpotifyClassifier:
     return result
 
 
-def execute_ha_command(english_command):
+async def execute_ha_command(english_command):
     ha_token = os.environ["HA_TOKEN"]
     ha_url = os.environ["HA_URL"]
     client = MultiServerMCPClient(
@@ -243,22 +243,25 @@ def execute_ha_command(english_command):
             },
         }
     )
-    tools = client.get_tools()
+    tools = await client.get_tools()
 
     llm = get_model().bind_tools(tools)
-    result = llm.invoke(english_command)
+    result = await llm.ainvoke(english_command)
     for tool_call in result.tool_calls:
         tool_name = tool_call["name"]
         tool_args = tool_call.get("args", {})
         tool = next(t for t in tools if t.name == tool_name)
-        tool_result = tool.ainvoke(tool_args)
+        try:
+            tool_result = await tool.ainvoke(tool_args)
 
-        followup = llm.invoke(
-            [
-                f"The original prompt is: {english_command}, parse the result of the tool following the instructions:",
-                result,
-                tool_result,
-            ]
-        )
+            followup = await llm.ainvoke(
+                [
+                    f"The original prompt is: {english_command}, parse the result of the tool following the instructions:",
+                    result,
+                    tool_result,
+                ]
+            )
+        except Exception:
+            return "Error calling tools in HA command"
         return followup.content
     return result
