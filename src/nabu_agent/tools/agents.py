@@ -2,12 +2,12 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from langchain_community.document_loaders.parsers.audio import OpenAIWhisperParserLocal
+from langchain_core.documents.base import Blob
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders.parsers.audio import OpenAIWhisperParserLocal
-from langchain_core.documents.base import Blob
 
 from ..tools.web_loader import search_and_fetch
 from ..utils.schemas import (

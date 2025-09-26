@@ -22,6 +22,15 @@ class Summarizer(BaseModel):
     answer: str = Field(description="The summarized answer extracted from the text.")
 
 
+class STT(BaseModel):
+    original_language: str = Field(
+        description="The language the input command is written in. Just one word."
+    )
+    translated_command: str = Field(
+        description="The input command translated from the original language to the defined destination language. Be accurate. If there is a name or an artist in the command, do not translate it."
+    )
+
+
 class Translator(BaseModel):
     original_language: str = Field(
         description="The language the input command is written in. Just one word."

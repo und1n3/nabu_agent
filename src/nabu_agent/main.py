@@ -1,6 +1,6 @@
-import logging
 import argparse
 import asyncio
+import logging
 
 from dotenv import load_dotenv
 
