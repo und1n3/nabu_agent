@@ -8,6 +8,7 @@ from ...tools.agents import (
     execute_search_text,
     execute_translator,
     execute_ha_command,
+    execute_stt,
 )
 from ...data.preestablished_commands import party_commands
 from ...utils.schemas import Classifier, PartySentence, QuestionType, Translator
@@ -18,10 +19,20 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 
+def stt(state: MainGraphState) -> MainGraphState:
+    logger.info("--- STT --- ")
+    result = execute_stt(input=state["input"])
+    for i in result:
+        logger.info(i)
+        result = i
+    state["stt_output"] = result
+    return state
+
+
 def translate_to_english(state: MainGraphState) -> MainGraphState:
-    logger.info("---Translating to english --- ")
+    logger.info("--- Translating to english --- ")
     result: Translator = execute_translator(
-        text=state["input_command"], destination_language="english"
+        text=state["stt_output"], destination_language="english"
     )
     state["original_language"] = result.original_language
     state["english_command"] = result.translated_command

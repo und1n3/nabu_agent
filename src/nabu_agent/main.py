@@ -28,7 +28,8 @@ def app():
         help="Input",
     )
     args = parser.parse_args()
-    res = asyncio.run(execute_main_workflow(args.input))
+    with open(args.input, "rb") as f:
+        res = asyncio.run(execute_main_workflow(f.read()))
     logger.info(res)
 
 

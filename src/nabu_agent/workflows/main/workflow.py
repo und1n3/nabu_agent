@@ -12,13 +12,14 @@ load_dotenv()
 
 def decide_action(state: MainGraphState) -> QuestionType:
     if "question_type" in state:
-        return state["question_type"].value
+        return state["question_type"]
     return END
 
 
-async def build_main_workflow() -> CompiledStateGraph:
+def build_main_workflow() -> CompiledStateGraph:
     workflow = StateGraph(MainGraphState)
 
+    workflow.add_node("STT", nodes.stt)
     workflow.add_node("Translator", nodes.translate_to_english)
     workflow.add_node("Enrouting Question", nodes.enroute_question)
     workflow.add_node("Pre-stablished commands", nodes.pre_established_commands)
@@ -27,7 +28,8 @@ async def build_main_workflow() -> CompiledStateGraph:
     workflow.add_node("Home Assistant Command", nodes.homeassistant)
     workflow.add_node("Finish Action", nodes.finish_action)
 
-    workflow.set_entry_point("Translator")
+    workflow.set_entry_point("STT")
+    workflow.add_edge("STT", "Translator")
     workflow.add_edge("Translator", "Enrouting Question")
     workflow.add_conditional_edges(
         "Enrouting Question",
@@ -51,11 +53,11 @@ async def build_main_workflow() -> CompiledStateGraph:
 global hass
 
 
-async def execute_main_workflow(user_input: str, hass=None) -> str:
+async def execute_main_workflow(audio_input: bytes, hass=None) -> str:
     hass = hass
-    app = await build_main_workflow()
+    app = build_main_workflow()
     # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
     # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
-    res = await app.ainvoke({"input_command": user_input})
+    res = await app.ainvoke({"input": audio_input})
 
     return res["final_answer_translated"]

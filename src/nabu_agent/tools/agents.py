@@ -6,6 +6,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_openai import ChatOpenAI
+from langchain_community.document_loaders.parsers.audio import OpenAIWhisperParserLocal
+from langchain_core.documents.base import Blob
 
 from ..tools.web_loader import search_and_fetch
 from ..utils.schemas import (
@@ -38,9 +40,18 @@ def get_model() -> ChatOpenAI:
     return model
 
 
+def execute_stt(input):
+    blob = Blob.from_data(
+        data=input,
+    )
+    parser = OpenAIWhisperParserLocal(lang_model="openai/whisper-small")
+    result = parser.lazy_parse(blob)
+    return result
+
+
 def execute_classifier_agent(
     english_command, preestablished_commands_schema
-) -> QuestionType:
+) -> Classifier:
     llm = get_model()
     structured_llm_grader = llm.with_structured_output(Classifier)
 
