@@ -13,12 +13,6 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(filename="nabu_agent_agent.log", level=logging.INFO, filemode="w+")
 
 
-def main():
-    res = execute_main_workflow(input)
-    logger.info(res)
-    print("f")
-
-
 def app():
     # All the logic of argparse goes in this function
     parser = argparse.ArgumentParser(description="Say hi.")
@@ -34,4 +28,4 @@ def app():
 
 
 if __name__ == "__main__":
-    main()
+    app()

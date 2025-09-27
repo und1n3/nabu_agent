@@ -7,7 +7,7 @@ class QuestionType(str, Enum):
     spotify = "Spotify Command"
     internet = "Internet Search"
     party = "Party Mode"
-    homeassistant = "Home Assistant Command"
+    homeassistant = "HA Command"
 
 
 class SpotifyType(str, Enum):

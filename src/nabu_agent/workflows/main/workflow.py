@@ -53,11 +53,11 @@ def build_main_workflow() -> CompiledStateGraph:
 global hass
 
 
-async def execute_main_workflow(audio_input: bytes, hass=None) -> str:
-    hass = hass
+async def execute_main_workflow(audio_input: bytes, graph: bool = False) -> str:
     app = build_main_workflow()
-    # app.get_graph().draw_mermaid_png(output_file_path="graph.png")
-    # app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
+    if graph:
+        app.get_graph().draw_mermaid_png(output_file_path="graph.png")
+        app.get_graph(xray=1).draw_mermaid_png(output_file_path="full_graph.png")
     res = await app.ainvoke({"input": audio_input})
 
     return res["final_answer_translated"]

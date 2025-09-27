@@ -48,7 +48,6 @@ def enroute_question(state: MainGraphState) -> MainGraphState:
         english_command=state["english_command"],
         preestablished_commands_schema=party_commands,
     )
-    print(result)
     state["question_type"]: QuestionType = result.classification
     logger.info(f"Enrouting to: {result.classification}")
     return state
