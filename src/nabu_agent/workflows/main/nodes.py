@@ -22,10 +22,11 @@ logger = logging.getLogger(__name__)
 def stt(state: MainGraphState) -> MainGraphState:
     logger.info("--- STT --- ")
     result = execute_stt(input=state["input"])
+    final_result = ""
     for i in result:
-        logger.info(i)
-        result = i
-    state["stt_output"] = result
+        logger.info(i.text)
+        final_result += i.text
+    state["stt_output"] = final_result
     return state
 
 

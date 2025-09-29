@@ -47,9 +47,6 @@ def execute_stt(input: bytes):
     else:
         model = WhisperModel(model_size, device="cpu", compute_type="int8")
     result, info = model.transcribe(BytesIO(input), beam_size=5)
-    logging.info(info)
-    # parser = OpenAIWhisperParserLocal(lang_model="openai/whisper-small")
-    # result = parser.lazy_parse(blob)
     return result
 
 
