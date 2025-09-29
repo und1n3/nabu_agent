@@ -1,9 +1,9 @@
 import logging
 import os
+from io import BytesIO
 
 from dotenv import load_dotenv
-from langchain_community.document_loaders.parsers.audio import OpenAIWhisperParserLocal
-from langchain_core.documents.base import Blob
+from faster_whisper import WhisperModel
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
 from langchain_mcp_adapters.client import MultiServerMCPClient
@@ -20,7 +20,7 @@ from ..utils.schemas import (
 )
 
 logger = logging.getLogger(__name__)
-
+model_size = os.getenv("FASTER_WHISPER_MODEL")
 load_dotenv()
 
 
@@ -31,8 +31,8 @@ def get_model() -> ChatOpenAI:
     # model = ChatOllama(model="llama3.2")
     model = ChatOpenAI(
         # model="GPT-OSS-20B",
-        model="Qwen3-4B",
-        api_key=os.environ["API_KEY"],
+        model=os.environ["LLM_MODEL"],
+        api_key=os.environ["LLM_API_KEY"],
         base_url=os.environ["LLM_BASE_URL"],
         temperature=0.1,
         top_p=1,
@@ -40,12 +40,16 @@ def get_model() -> ChatOpenAI:
     return model
 
 
-def execute_stt(input):
-    blob = Blob.from_data(
-        data=input,
-    )
-    parser = OpenAIWhisperParserLocal(lang_model="openai/whisper-small")
-    result = parser.lazy_parse(blob)
+def execute_stt(input: bytes):
+    # Run on GPU with FP16
+    if os.getenv("FASTER_WHISPER_USE_CUDA") == "true":
+        model = WhisperModel(model_size, device="cuda", compute_type="float16")
+    else:
+        model = WhisperModel(model_size, device="cpu", compute_type="int8")
+    result, info = model.transcribe(BytesIO(input), beam_size=5)
+    logging.info(info)
+    # parser = OpenAIWhisperParserLocal(lang_model="openai/whisper-small")
+    # result = parser.lazy_parse(blob)
     return result
 
 
